@@ -16,8 +16,8 @@ public class ProductDaoTest {
 
     @Before
     public void setup() {
-        jejuProductDao = new JejuProductDao();
-        hallaProductDao = new HallaProductDao();
+        jejuProductDao = new ProductDao(new JejuConnectionMaker());
+        hallaProductDao = new ProductDao(new HallaConnectionMaker());
     }
 
     @Test

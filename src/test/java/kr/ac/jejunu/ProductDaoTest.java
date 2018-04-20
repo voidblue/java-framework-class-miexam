@@ -3,6 +3,8 @@ package kr.ac.jejunu;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.theories.suppliers.TestedOn;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.sql.SQLException;
 
@@ -17,8 +19,8 @@ public class ProductDaoTest {
 
     @Before
     public void setup() {
-        daoFactory = new DaoFactory();
-        productDao = daoFactory.getDao();
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(DaoFactory.class);
+        productDao = applicationContext.getBean("getDao", ProductDao.class);
 //        hallaProductDao = new ProductDao(new HallaConnectionMaker());
 
     }

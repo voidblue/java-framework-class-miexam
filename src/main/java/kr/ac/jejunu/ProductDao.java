@@ -4,172 +4,51 @@ import javax.sql.DataSource;
 import java.sql.*;
 
 public class ProductDao {
+    private JdbcContext jdbcContext;
     DataSource dataSource;
-    public ProductDao(DataSource dataSource){
-        this.dataSource = dataSource;
+    public ProductDao(JdbcContext jdbcContext){
+        this.jdbcContext = jdbcContext;
     }
 
-    private Connection getConnection() throws SQLException, ClassNotFoundException {
+    public Connection getConnection() throws SQLException, ClassNotFoundException {
         return dataSource.getConnection();
     }
 
 
     public Product get(Long id) throws ClassNotFoundException, SQLException {
         StatementStrategy statementStrategy = new GetStatementStarategy(id);
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        Product product = null;
-
-        try {
-            connection = getConnection();
-
-            preparedStatement = statementStrategy.makeStatement(connection);
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                product = new Product();
-                product.setId(resultSet.getLong("id"));
-                product.setTitle(resultSet.getString("title"));
-                product.setPrice(resultSet.getInt("price"));
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(connection != null){
-                try {
-                    connection.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-            if(preparedStatement != null){
-                try {
-                    preparedStatement.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-            if(resultSet != null){
-                try {
-                    resultSet.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return product;
+        return jdbcContext.getContext(statementStrategy);
     }
 
+    private Product getContext(StatementStrategy statementStrategy) {
+
+        return jdbcContext.getContext(statementStrategy);
+    }
 
 
     public Long insert(Product product) throws SQLException, ClassNotFoundException {
         StatementStrategy statementStrategy = new InsertStatementStategy(product);
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        Long insertedId = null;
-        try {
-            connection = getConnection();
+        return jdbcContext.insertContext(statementStrategy);
+    }
 
-            preparedStatement =  statementStrategy.makeStatement(connection);
-
-            preparedStatement.executeUpdate();
-
-            resultSet = preparedStatement.getGeneratedKeys();
-            resultSet.next();
-            insertedId = resultSet.getLong(1);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(connection != null){
-                try {
-                    connection.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-            if(preparedStatement != null){
-                try {
-                    preparedStatement.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-            if(resultSet != null){
-                try {
-                    resultSet.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }
+    private Long insertContext(StatementStrategy statementStrategy) {
 
 
-        return insertedId;
+        return jdbcContext.insertContext(statementStrategy);
     }
 
     public void update(Product product) {
         StatementStrategy statementStrategy = new UpdateStatementStategy(product);
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
+        jdbcContext.updateContext(statementStrategy);
+    }
 
-        try {
-            connection = getConnection();
+    private void updateContext(StatementStrategy statementStrategy) {
 
-            preparedStatement = statementStrategy.makeStatement(connection);
-
-            preparedStatement.executeUpdate();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(connection != null){
-                try {
-                    connection.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-            if(preparedStatement != null){
-                try {
-                    preparedStatement.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }
+        jdbcContext.updateContext(statementStrategy);
     }
 
     public void delete(Long id) {
         StatementStrategy statementStrategy = new DeleteStatementStrategy(id);
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-
-        try {
-            connection = getConnection();
-
-            preparedStatement = statementStrategy.makeStatement(connection);
-
-            preparedStatement.executeUpdate();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(connection != null){
-                try {
-                    connection.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-            if(preparedStatement != null){
-                try {
-                    preparedStatement.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }
+        jdbcContext.updateContext(statementStrategy);
     }
 }

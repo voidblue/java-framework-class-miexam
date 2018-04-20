@@ -1,10 +1,7 @@
 package kr.ac.jejunu;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class JdbcContext {
     private DataSource dataSource;
@@ -137,5 +134,23 @@ public class JdbcContext {
                 }
             }
         }
+    }
+
+    PreparedStatement getAndInsertStatementContext(String sql, Object[] params, Connection connection) throws SQLException {
+        PreparedStatement preparedStatement =
+                connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        for(int i = 0 ; i < params.length ; i++){
+            preparedStatement.setObject(i+1, params[i]);
+        }
+        return preparedStatement;
+    }
+
+    void updateAndDeleteStatmentContext(String sql, Object[] params) {
+        updateContext((connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            for(int i = 0 ; i < params.length ; i++){
+                preparedStatement.setObject(i+1, params[i]);
+            }
+            return preparedStatement; }));
     }
 }

@@ -1,10 +1,13 @@
 package kr.ac.jejunu;
 
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 
 import java.sql.SQLException;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class ProductDaoTest {
     public void setup() {
@@ -21,5 +24,21 @@ public class ProductDaoTest {
         assertEquals(id, product.getId());
         assertEquals(title, product.getTitle());
         assertEquals(price, product.getPrice());
+    }
+
+    @Test
+    public void insert() throws SQLException, ClassNotFoundException {
+        ProductDao productDao = new ProductDao();
+        Product product = new Product();
+
+        product.setTitle("사과");
+        product.setPrice(10000);
+
+        Long insertedId = productDao.insert(product);
+        Product insertedProduct = productDao.get(insertedId);
+        assertThat(insertedProduct.getId(), is(insertedId));
+        assertThat(insertedProduct.getTitle(), is(product.getTitle()));
+        assertThat(insertedProduct.getPrice(), is(product.getPrice()));
+
     }
 }

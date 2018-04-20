@@ -1,15 +1,16 @@
 package kr.ac.jejunu;
 
+import javax.sql.DataSource;
 import java.sql.*;
 
 public class ProductDao {
-    ConnectionMaker connectionMaker;
-    public ProductDao(ConnectionMaker connectionMaker){
-        this.connectionMaker = connectionMaker;
+    DataSource dataSource;
+    public ProductDao(DataSource dataSource){
+        this.dataSource = dataSource;
     }
 
     private Connection getConnection() throws SQLException, ClassNotFoundException {
-        return connectionMaker.getConnection();
+        return dataSource.getConnection();
     }
 
 

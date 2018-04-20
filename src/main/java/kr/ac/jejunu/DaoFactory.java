@@ -25,7 +25,7 @@ public class DaoFactory {
 
     @Bean
     public ProductDao getDao() {
-        return new ProductDao(connectionMaker());
+        return new ProductDao(dataSource());
     }
     @Bean
     ConnectionMaker connectionMaker(){

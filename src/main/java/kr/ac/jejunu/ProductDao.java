@@ -15,23 +15,49 @@ public class ProductDao {
 
 
     public Product get(Long id) throws ClassNotFoundException, SQLException {
-        Connection connection = getConnection();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Product product = null;
 
-        PreparedStatement preparedStatement = connection.prepareStatement("select * from product where id = ?");
-        preparedStatement.setLong(1, id);
+        try {
+            connection = getConnection();
 
-        ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
+            preparedStatement = connection.prepareStatement("select * from product where id = ?");
+            preparedStatement.setLong(1, id);
 
-        Product product = new Product();
-        product.setId(resultSet.getLong("id"));
-        product.setTitle(resultSet.getString("title"));
-        product.setPrice(resultSet.getInt("price"));
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
 
-        //자원을 해지한다.
-        resultSet.close();
-        preparedStatement.close();
-        connection.close();
+            product = new Product();
+            product.setId(resultSet.getLong("id"));
+            product.setTitle(resultSet.getString("title"));
+            product.setPrice(resultSet.getInt("price"));
+        }catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            if(connection != null){
+                try {
+                    connection.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            if(preparedStatement != null){
+                try {
+                    preparedStatement.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            if(resultSet != null){
+                try {
+                    resultSet.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
 
         return product;
     }
@@ -39,22 +65,48 @@ public class ProductDao {
 
 
     public Long insert(Product product) throws SQLException, ClassNotFoundException {
-        Connection connection = getConnection();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Long insertedId = null;
+        try {
+            connection = getConnection();
 
-        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO product(title, price) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-        preparedStatement.setString(1, product.getTitle());
-        preparedStatement.setInt(2, product.getPrice());
+            preparedStatement = connection.prepareStatement("INSERT INTO product(title, price) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, product.getTitle());
+            preparedStatement.setInt(2, product.getPrice());
 
-        preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
 
-        ResultSet resultSet = preparedStatement.getGeneratedKeys();
-        resultSet.next();
-        Long insertedId = resultSet.getLong(1);
+            resultSet = preparedStatement.getGeneratedKeys();
+            resultSet.next();
+            insertedId = resultSet.getLong(1);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            if(connection != null){
+                try {
+                    connection.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            if(preparedStatement != null){
+                try {
+                    preparedStatement.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            if(resultSet != null){
+                try {
+                    resultSet.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
 
-        //자원을 해지한다.
-        resultSet.close();
-        preparedStatement.close();
-        connection.close();
 
         return insertedId;
     }

@@ -27,13 +27,14 @@ public class ProductDao {
             preparedStatement.setLong(1, id);
 
             resultSet = preparedStatement.executeQuery();
-            resultSet.next();
 
-            product = new Product();
-            product.setId(resultSet.getLong("id"));
-            product.setTitle(resultSet.getString("title"));
-            product.setPrice(resultSet.getInt("price"));
-        }catch (SQLException e){
+            if (resultSet.next()) {
+                product = new Product();
+                product.setId(resultSet.getLong("id"));
+                product.setTitle(resultSet.getString("title"));
+                product.setPrice(resultSet.getInt("price"));
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }finally {
             if(connection != null){
@@ -81,7 +82,7 @@ public class ProductDao {
             resultSet = preparedStatement.getGeneratedKeys();
             resultSet.next();
             insertedId = resultSet.getLong(1);
-        }catch (SQLException e){
+        }catch (Exception e){
             e.printStackTrace();
         }finally {
             if(connection != null){
@@ -109,5 +110,69 @@ public class ProductDao {
 
 
         return insertedId;
+    }
+
+    public void update(Product product) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = getConnection();
+
+            preparedStatement = connection.prepareStatement("UPDATE product SET title = ?, price = ? WHERE id = ?");
+            preparedStatement.setString(1, product.getTitle());
+            preparedStatement.setInt(2, product.getPrice());
+            preparedStatement.setLong(3, product.getId());
+
+            preparedStatement.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(connection != null){
+                try {
+                    connection.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            if(preparedStatement != null){
+                try {
+                    preparedStatement.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void delete(Long id) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = getConnection();
+
+            preparedStatement = connection.prepareStatement("DELETE FROM product WHERE id = ?");
+            preparedStatement.setLong(1, id);
+
+            preparedStatement.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(connection != null){
+                try {
+                    connection.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            if(preparedStatement != null){
+                try {
+                    preparedStatement.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
